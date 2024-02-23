@@ -18,5 +18,11 @@ go test -bench=.  .
 # gin framework
 go get -u github.com/gin-gonic/gin
 
+# gorm
+go get -u gorm.io/gorm
+go get -u gorm.io/driver/postgres
+go doc gorm.DB
+
+
 ```
 

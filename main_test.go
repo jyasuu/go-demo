@@ -115,3 +115,23 @@ func Test_main(t *testing.T) {
 		})
 	}
 }
+
+
+func BenchmarkGenTestAdd(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		add(1,2)
+	}
+}
+func BenchmarkGenTestDivide(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		divide(1,2)
+	}
+}
+func BenchmarkGenTestCircle(b *testing.B) {
+	c := Circle{
+		Radius: 5,
+	}
+	for i := 0; i < b.N; i++ {
+		c.Area()
+	}
+}

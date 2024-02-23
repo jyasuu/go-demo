@@ -15,4 +15,8 @@ go test -v -cover=true main_test.go main.go
 # benchmark 
 go test -bench=.  .
 
+# gin framework
+go get -u github.com/gin-gonic/gin
+
 ```
+

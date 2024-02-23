@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"math"
+  "net/http"
+
+  "github.com/gin-gonic/gin"
 )
 
 // Struct definition
@@ -37,6 +40,7 @@ type Circle struct {
 func (c Circle) Area() float64 {
 	return math.Pi * c.Radius * c.Radius
 }
+
 
 func main() {
 	// Variable declaration and assignment
@@ -118,4 +122,12 @@ func main() {
 	shape = Circle{Radius: 5.0}
 	area := shape.Area()
 	fmt.Printf("Circle Area: %.2f\n", area)
+
+	r := gin.Default()
+	r.GET("/ping", func(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "pong",
+	})
+	})
+	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

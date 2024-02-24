@@ -11,7 +11,7 @@ https://github.com/redis/go-redis
 
 ```sh
 
-go mod init example.com/m
+go mod init github.com/jyasuu/go-demo
 
 # generate unit test
 go get -u github.com/cweill/gotests/...
@@ -34,5 +34,12 @@ curl localhost:3000/ping | jq
 curl Daniel:123456@localhost:3000/hello/Daniel/play\?firstnam=Sam\&lastname=Lucas -s | jq
 
 
+apt install -y protobuf-compiler
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+
+protoc --go_out=. --go_opt=paths=source_relative \
+    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+    helloworld/helloworld.proto
 ```
 

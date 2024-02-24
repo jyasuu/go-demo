@@ -212,14 +212,28 @@ func fib(x int) int {
 	return fib(x-1) + fib(x-2)
 }
 
+func goExample1() {
+	sum := 10
+	go func() { sum += 3 }()
+	go func() { sum -= 5 }()
+	go func() { sum *= 2 }()
+	var input string
+	fmt.Scanln(&input)
+	fmt.Println(sum)
+}
 
-func main() {
+func goExample2() {
 	
 	go spinner(100 * time.Millisecond)
 	const n = 45
 	fibN := fib(n)
 	fmt.Printf("\rFibonacci(%d) = %d \n", n, fibN)
+}
 
+
+func main() {
+	goExample1() 
+	goExample2()
 
 	// Variable declaration and assignment
 	// Type inference

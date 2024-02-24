@@ -147,154 +147,96 @@ func ExampleClient() {
 
 func main() {
 	// Variable declaration and assignment
-	var x int = 10
-	y := 5 // Type inference
-
+	// Type inference
 	// Conditional statement
-	if x > y {
-		fmt.Println("x is greater than y")
-	} else {
-		fmt.Println("y is greater than or equal to x")
-	}
-
 	// Looping construct
-	for i := 0; i < 5; i++ {
-		fmt.Println(i)
-	}
-
 	// Array declaration and initialization
-	numbers := [3]int{1, 2, 3}
-
 	// Slice creation
-	slice := numbers[1:3]
-
 	// Map declaration and initialization
-	person := map[string]string{
-		"name":  "John",
-		"age":   "30",
-		"city":  "New York",
-		"email": "john@example.com",
-	}
-	
 	// Accessing values
-	name := person["name"]
-	age := person["age"]
-	city := person["city"]
-	email := person["email"]
-
 	// Printing values
-	fmt.Printf("Name: %s\n", name)
-	fmt.Printf("Age: %s\n", age)
-	fmt.Printf("City: %s\n", city)
-	fmt.Printf("Email: %s\n", email)
-
 	// Modifying values
-	person["age"] = "31"
-	person["city"] = "San Francisco"
-
 	// Printing updated values
-	fmt.Printf("Updated Age: %s\n", person["age"])
-	fmt.Printf("Updated City: %s\n", person["city"])
-	
-
 	// Calling a function
-	sum := add(x, y)
-
 	// Error handling
-	result, err := divide(10.0, 2.0)
-	if err != nil {
-		fmt.Println("Error:", err)
-	} else {
-		fmt.Println("Result:", result)
-	}
-
 	// Using a struct
-	p := Point{X: 1, Y: 2}
-
 	// Printing values
-	fmt.Printf("Sum: %d\n", sum)
-	fmt.Printf("Point: %+v\n", p)
-
 	// Looping through a slice
-	for index, value := range slice {
-		fmt.Printf("Index: %d, Value: %d\n", index, value)
-	}
-
 	// Using an interface
-	var shape Shape
-	shape = Circle{Radius: 5.0}
-	area := shape.Area()
-	fmt.Printf("Circle Area: %.2f\n", area)
+	basicExample()
 
 	
-    db, err := connectToPostgreSQL()
-    if err != nil {
-        log.Fatal(err)
-    }
-    // defer db.Close()
-
     // Perform database migration
-    err = db.AutoMigrate(&User{})
-    if err != nil {
-        log.Fatal(err)
-    }
-
     // Create a user
-    newUser := &User{Username: "john_doe", Email: "john.doe@example.com"}
-    err = createUser(db, newUser)
-    if err != nil {
-        log.Fatal(err)
-    }
-    log.Println("Created User:", newUser)
-
     // Query user by ID
-    userID := newUser.ID
-    user, err := getUserByID(db, userID)
-    if err != nil {
-        log.Fatal(err)
-    }
-    log.Println("User by ID:", user)
-
     // Update user
-    user.Email = "updated_email@example.com"
-    err = updateUser(db, user)
-    if err != nil {
-        log.Fatal(err)
-    }
-    log.Println("Updated User:", user)
-
     // Delete user
-    err = deleteUser(db, user)
-    if err != nil {
-        log.Fatal(err)
-    }
-    log.Println("Deleted User:", user)
+    postgresExample()
 
+	// Set client options
+	// Connect to MongoDB
+	// Check the connection
+	// create a value into which the result can be decoded
+	// Pass these options to the Find method
+	// Here's an array in which you can store the decoded documents
+	// Passing bson.D{{}} as the filter matches all documents in the collection
+	// Finding multiple documents returns a cursor
+	// Iterating through the cursor allows us to decode documents one at a time
+	// create a value into which the single document can be decoded
+	// Close the cursor once finished
+	mongoExample()
+
+
+	ExampleClient()
+
+	r := gin.Default()
+	r.GET("/ping", func(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "pong",
+	})
+	})
+	
+	authorized := r.Group("/", gin.BasicAuth(gin.Accounts{
+		"Daniel": "123456",
+		"Sam":    "abc123",
+	}))
+
+	authorized.GET("/hello/:name/*action", func(c *gin.Context) {
+		name := c.Param("name")
+		action := c.Param("action")
+
+		firstname := c.DefaultQuery("firstname", "None")
+		lastname := c.Query("lastname")
+
+		c.JSON(http.StatusOK, gin.H{
+			"name":      name,
+			"action":    action,
+			"firstname": firstname,
+			"lastname":  lastname,
+		})
+	})
+	r.Run(":3000") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+}
+
+func mongoExample() {
 	credential := options.Credential{
 		Username: "root",
 		Password: "123456",
 	}
 
-	// Set client options
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017").SetAuth(credential)
 
-	// Connect to MongoDB
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Check the connection
 	err = client.Ping(context.TODO(), nil)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	
-
-
 
 	collection := client.Database("test").Collection("trainers")
 
@@ -335,8 +277,6 @@ func main() {
 
 		fmt.Printf("Matched %v documents and updated %v documents.\n", updateResult.MatchedCount, updateResult.ModifiedCount)
 
-
-		// create a value into which the result can be decoded
 		var result2 Trainer
 
 		err = collection.FindOne(context.TODO(), filter).Decode(&result2)
@@ -348,24 +288,19 @@ func main() {
 
 	}
 	{
-		// Pass these options to the Find method
+
 		findOptions := options.Find()
 		findOptions.SetLimit(2)
 
-		// Here's an array in which you can store the decoded documents
 		var results []*Trainer
 
-		// Passing bson.D{{}} as the filter matches all documents in the collection
 		cur, err := collection.Find(context.TODO(), bson.D{{}}, findOptions)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		// Finding multiple documents returns a cursor
-		// Iterating through the cursor allows us to decode documents one at a time
 		for cur.Next(context.TODO()) {
-			
-			// create a value into which the single document can be decoded
+
 			var elem Trainer
 			err := cur.Decode(&elem)
 			if err != nil {
@@ -379,12 +314,10 @@ func main() {
 			log.Fatal(err)
 		}
 
-		// Close the cursor once finished
 		cur.Close(context.TODO())
 
 		fmt.Printf("Found multiple documents (array of pointers): %+v\n", results)
 	}
-
 
 	err = client.Disconnect(context.TODO())
 
@@ -392,35 +325,110 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Println("Connection to MongoDB closed.")
+}
 
+func postgresExample() {
+	db, err := connectToPostgreSQL()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	ExampleClient()
+	err = db.AutoMigrate(&User{})
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "pong",
-	})
-	})
-	
-	authorized := r.Group("/", gin.BasicAuth(gin.Accounts{
-		"Daniel": "123456",
-		"Sam":    "abc123",
-	}))
+	newUser := &User{Username: "john_doe", Email: "john.doe@example.com"}
+	err = createUser(db, newUser)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Created User:", newUser)
 
-	authorized.GET("/hello/:name/*action", func(c *gin.Context) {
-		name := c.Param("name")
-		action := c.Param("action")
+	userID := newUser.ID
+	user, err := getUserByID(db, userID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("User by ID:", user)
 
-		firstname := c.DefaultQuery("firstname", "None")
-		lastname := c.Query("lastname")
+	user.Email = "updated_email@example.com"
+	err = updateUser(db, user)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Updated User:", user)
 
-		c.JSON(http.StatusOK, gin.H{
-			"name":      name,
-			"action":    action,
-			"firstname": firstname,
-			"lastname":  lastname,
-		})
-	})
-	r.Run(":3000") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	err = deleteUser(db, user)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Deleted User:", user)
+
+	// defer db.Close()
+}
+
+func basicExample() {
+	var x int = 10
+	y := 5
+
+	if x > y {
+		fmt.Println("x is greater than y")
+	} else {
+		fmt.Println("y is greater than or equal to x")
+	}
+
+	for i := 0; i < 5; i++ {
+		fmt.Println(i)
+	}
+
+	numbers := [3]int{1, 2, 3}
+
+	slice := numbers[1:3]
+
+	person := map[string]string{
+		"name":  "John",
+		"age":   "30",
+		"city":  "New York",
+		"email": "john@example.com",
+	}
+
+	name := person["name"]
+	age := person["age"]
+	city := person["city"]
+	email := person["email"]
+
+	fmt.Printf("Name: %s\n", name)
+	fmt.Printf("Age: %s\n", age)
+	fmt.Printf("City: %s\n", city)
+	fmt.Printf("Email: %s\n", email)
+
+	person["age"] = "31"
+	person["city"] = "San Francisco"
+
+	fmt.Printf("Updated Age: %s\n", person["age"])
+	fmt.Printf("Updated City: %s\n", person["city"])
+
+	sum := add(x, y)
+
+	result, err := divide(10.0, 2.0)
+	if err != nil {
+		fmt.Println("Error:", err)
+	} else {
+		fmt.Println("Result:", result)
+	}
+
+	p := Point{X: 1, Y: 2}
+
+	fmt.Printf("Sum: %d\n", sum)
+	fmt.Printf("Point: %+v\n", p)
+
+	for index, value := range slice {
+		fmt.Printf("Index: %d, Value: %d\n", index, value)
+	}
+
+	var shape Shape
+	shape = Circle{Radius: 5.0}
+	area := shape.Area()
+	fmt.Printf("Circle Area: %.2f\n", area)
 }

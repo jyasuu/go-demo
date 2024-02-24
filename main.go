@@ -232,5 +232,25 @@ func main() {
 		"message": "pong",
 	})
 	})
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	
+	authorized := r.Group("/", gin.BasicAuth(gin.Accounts{
+		"Daniel": "123456",
+		"Sam":    "abc123",
+	}))
+
+	authorized.GET("/hello/:name/*action", func(c *gin.Context) {
+		name := c.Param("name")
+		action := c.Param("action")
+
+		firstname := c.DefaultQuery("firstname", "None")
+		lastname := c.Query("lastname")
+
+		c.JSON(http.StatusOK, gin.H{
+			"name":      name,
+			"action":    action,
+			"firstname": firstname,
+			"lastname":  lastname,
+		})
+	})
+	r.Run(":3000") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

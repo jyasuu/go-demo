@@ -23,6 +23,10 @@ go get -u gorm.io/gorm
 go get -u gorm.io/driver/postgres
 go doc gorm.DB
 
+# test
+curl localhost:3000/ping | jq
+curl Daniel:123456@localhost:3000/hello/Daniel/play\?firstnam=Sam\&lastname=Lucas -s | jq
+
 
 ```
 

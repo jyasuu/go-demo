@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"sync"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,7 @@ import (
     "go.mongodb.org/mongo-driver/mongo/options"
 	
 	"github.com/redis/go-redis/v9"
+	
 )
 
 // Struct definition
@@ -145,6 +147,56 @@ func ExampleClient() {
 }
 
 
+func raceExample1() {
+	var w sync.WaitGroup
+	var sum = 0
+	for i := 0; i < 1000; i++ {
+		w.Add(1)
+		go func() {
+			defer w.Done()
+			sum++
+		}()
+	}
+	w.Wait()
+	fmt.Println("final sum is", sum)
+}
+
+func raceExample2() {
+	var w sync.WaitGroup
+	var m sync.Mutex
+	var sum = 0
+	for i := 0; i < 1000; i++ {
+		w.Add(1)
+		go func() {
+			defer w.Done()
+			m.Lock()
+			sum++
+			m.Unlock()
+		}()
+	}
+	w.Wait()
+	fmt.Println("final sum is", sum)
+}
+
+func raceExample3() {
+	var w sync.WaitGroup
+	ch := make(chan bool, 1)
+	var sum = 0
+	for i := 0; i < 1000; i++ {
+		w.Add(1)
+		go func() {
+			defer w.Done()
+			ch <- true
+			sum++
+			<-ch
+		}()
+	}
+	w.Wait()
+	fmt.Println("final sum is", sum)
+}
+
+
+
 func main() {
 	// Variable declaration and assignment
 	// Type inference
@@ -164,6 +216,16 @@ func main() {
 	// Looping through a slice
 	// Using an interface
 	basicExample()
+
+	raceExample1()
+	raceExample1()
+	raceExample1()
+	raceExample2()
+	raceExample2()
+	raceExample2()
+	raceExample3()
+	raceExample3()
+	raceExample3()
 
 	
     // Perform database migration

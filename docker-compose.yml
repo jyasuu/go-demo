@@ -35,6 +35,14 @@ services:
       VCAP_APP_PORT: 8081
       ME_CONFIG_BASICAUTH_USERNAME: root
       ME_CONFIG_BASICAUTH_PASSWORD: 123456
+  redis:
+    restart: always
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - /data/redis-data:/data
   go-server:
     build: ./go-server
     ports:

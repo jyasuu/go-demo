@@ -6,6 +6,9 @@ https://ithelp.ithome.com.tw/users/20107343/ironman/1892
 https://www.mongodb.com/blog/post/mongodb-go-driver-tutorial
 https://www.mongodb.com/docs/drivers/go/current/fundamentals/connections/connection-guide/
 
+https://redis.io/docs/connect/clients/go/
+https://github.com/redis/go-redis
+
 ```sh
 
 go mod init example.com/m

@@ -46,3 +46,8 @@ protoc --go_out=. --go_opt=paths=source_relative \
     helloworld/helloworld.proto
 ```
 
+
+
+docker run  --network="host" fullstorydev/grpcurl -plaintext  -d '{"name": "1234"}' localhost:50051 helloworld.Greeter/SayHello
+
+docker run  --network="host" fullstorydev/grpcurl -plaintext  -d '{"name": "1234"}' localhost:50051 helloworld.Greeter/SayHelloAgain
